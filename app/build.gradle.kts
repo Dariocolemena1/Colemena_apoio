@@ -51,6 +51,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation(libs.androidx.compose.ui.tooling.preview)
+    dependencies {
+        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+        implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+    }
     implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -59,4 +63,13 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    dependencies {
+        // ViewModel para Compose
+        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+        implementation("androidx.compose.material3:material3:1.3.1")
+
+        // Runtime do Compose (para o mutableStateListOf)
+        implementation("androidx.compose.ui:ui:1.7.6")
+        implementation("androidx.compose.runtime:runtime:1.7.6")
+    }
 }

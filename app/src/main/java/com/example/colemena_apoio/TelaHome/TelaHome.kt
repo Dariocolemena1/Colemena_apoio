@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-// Importações do seu projeto (Verifique se esses nomes de pacotes existem)
+// Certifique-se de que estes nomes de pacotes coincidem com suas pastas
 import com.example.colemena_apoio.model.Apoio
 import com.example.colemena_apoio.viewmodel.ApoioViewModel
 
@@ -20,9 +20,8 @@ import com.example.colemena_apoio.viewmodel.ApoioViewModel
 fun HomeScreen(
     viewModel: ApoioViewModel = viewModel()
 ) {
-    // Usando .value para manter compatibilidade com seu código original
-    val apoioSelecionado = remember { mutableStateOf<Apoio?>(null) }
-    val mostrarEditar = remember { mutableStateOf(false) }
+    var apoioSelecionado by remember { mutableStateOf<Apoio?>(null) }
+    var mostrarEditar by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -37,28 +36,20 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botões de Adição
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
-                modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.adicionarApoio("Entrega de Material Escolar", "Distribuição de itens")
-                }
-            ) { Text("Entrega de Material Escolar") }
+                    viewModel.adicionarApoio("Material Escolar", "Distribuição de itens", "Material")
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Adicionar Material Escolar") }
 
             Button(
-                modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.adicionarApoio("Acompanhamento Pedagógico", "Desempenho acadêmico")
-                }
-            ) { Text("Acompanhamento Pedagógico") }
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    viewModel.adicionarApoio("Reforço Escolar", "Aulas extras")
-                }
-            ) { Text("Reforço Escolar") }
+                    viewModel.adicionarApoio("Reforço Escolar", "Aulas de matemática", "Reforço")
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Adicionar Reforço Escolar") }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -73,13 +64,19 @@ fun HomeScreen(
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(text = apoio.titulo, fontWeight = FontWeight.Bold)
                         Text(text = apoio.descricao)
+                        Text(
+                            text = "Categoria: ${apoio.categoria}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
                             TextButton(onClick = {
-                                apoioSelecionado.value = apoio
-                                mostrarEditar.value = true
+                                apoioSelecionado = apoio
+                                mostrarEditar = true
                             }) { Text("Editar") }
 
                             TextButton(onClick = {
@@ -92,32 +89,53 @@ fun HomeScreen(
         }
     }
 
-    if (mostrarEditar.value && apoioSelecionado.value != null) {
-        // Certifique-se de que esta função existe no seu projeto!
+    if (mostrarEditar && apoioSelecionado != null) {
         EditarApoioDialog(
-            apoio = apoioSelecionado.value!!,
-            onSalvar = { titulo, descricao ->
-                viewModel.editarApoio(apoioSelecionado.value!!.id, titulo, descricao)
-                mostrarEditar.value = false
+            apoio = apoioSelecionado!!,
+            onSalvar = { novoTitulo, novaDescricao ->
+                viewModel.editarApoio(apoioSelecionado!!.id, novoTitulo, novaDescricao)
+                mostrarEditar = false
+                apoioSelecionado = null
             },
-            onCancelar = { mostrarEditar.value = false }
+            onCancelar = {
+                mostrarEditar = false
+                apoioSelecionado = null
+            }
         )
     }
 }
 
-// Componente Placeholder caso você ainda não tenha criado o Dialog
 @Composable
 fun EditarApoioDialog(
     apoio: Apoio,
     onSalvar: (String, String) -> Unit,
     onCancelar: () -> Unit
 ) {
+    var txtTitulo by remember { mutableStateOf(apoio.titulo) }
+    var txtDescricao by remember { mutableStateOf(apoio.descricao) }
+
     AlertDialog(
         onDismissRequest = onCancelar,
         title = { Text("Editar Apoio") },
-        text = { Text("Deseja salvar as alterações em ${apoio.titulo}?") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = txtTitulo,
+                    onValueChange = { txtTitulo = it },
+                    label = { Text("Título") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = txtDescricao,
+                    onValueChange = { txtDescricao = it },
+                    label = { Text("Descrição") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
         confirmButton = {
-            Button(onClick = { onSalvar(apoio.titulo, apoio.descricao) }) { Text("Salvar") }
+            Button(onClick = { onSalvar(txtTitulo, txtDescricao) }) { Text("Salvar") }
         },
         dismissButton = {
             TextButton(onClick = onCancelar) { Text("Cancelar") }

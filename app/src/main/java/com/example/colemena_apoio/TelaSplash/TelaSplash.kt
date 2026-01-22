@@ -34,7 +34,7 @@ fun SplashScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "EduApoio",
+                text = "ColemenaApoio",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )

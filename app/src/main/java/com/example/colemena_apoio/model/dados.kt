@@ -1,7 +1,9 @@
 package com.example.colemena_apoio.model
 
+// Usar "data class" resolve o erro de inicialização automaticamente
 data class Apoio(
-    val id: Int,
-    var titulo: String,
-    var descricao: String
+    val id: String,
+    val titulo: String,
+    val descricao: String,
+    val categoria: String = "Geral"
 )

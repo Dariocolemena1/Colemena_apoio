@@ -1,43 +1,35 @@
 package com.example.colemena_apoio.viewmodel
 
-
-
-
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.colemena_apoio.model.Apoio
+import java.util.UUID
 
 class ApoioViewModel : ViewModel() {
+    private val _listaApoios = mutableStateListOf<Apoio>()
+    val listaApoios: List<Apoio> = _listaApoios
 
-    private var nextId = 1
-
-    val listaApoios = mutableStateListOf<Apoio>()
-
-    fun adicionarApoio(titulo: String, descricao: String) {
-        listaApoios.add(
-            Apoio(
-                id = nextId++,
-                titulo = titulo,
-                descricao = descricao
-            )
+    fun adicionarApoio(titulo: String, descricao: String, categoria: String) {
+        val novo = Apoio(
+            id = UUID.randomUUID().toString(),
+            titulo = titulo,
+            descricao = descricao,
+            categoria = categoria
         )
+        _listaApoios.add(novo)
     }
 
-    fun removerApoio(id: Int) {
-        listaApoios.removeAll { it.id == id }
+    fun removerApoio(id: String) {
+        _listaApoios.removeIf { it.id == id }
     }
 
-    fun editarApoio(id: Int, titulo: String, descricao: String) {
-        listaApoios.find { it.id == id }?.apply {
-            this.titulo = titulo
-            this.descricao = descricao
-        }
-    }
-
-    fun buscarApoios(texto: String): List<Apoio> {
-        return listaApoios.filter { apoio ->
-            apoio.titulo.contains(texto, ignoreCase = true) ||
-                    apoio.descricao.contains(texto, ignoreCase = true)
+    fun editarApoio(id: String, novoTitulo: String, novaDescricao: String) {
+        val index = _listaApoios.indexOfFirst { it.id == id }
+        if (index != -1) {
+            _listaApoios[index] = _listaApoios[index].copy(
+                titulo = novoTitulo,
+                descricao = novaDescricao
+            )
         }
     }
 }
